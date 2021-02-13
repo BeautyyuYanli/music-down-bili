@@ -1,7 +1,8 @@
 import feedparser, requests, ffmpeg, time, re, codecs
 import downloader, cover
 # config
-proxies = { 'http': 'http://127.0.0.1:1081', 'https': 'http://127.0.0.1:1081'}
+# proxies = { 'http': 'http://127.0.0.1:1081', 'https': 'http://127.0.0.1:1081'}
+proxies = {}
 rssurl = 'https://rsshub.app/bilibili/fav/10725385/53706285'
 # rssurl = 'https://rsshub.app/bilibili/fav/10725385/1173410585'
 # bv2av

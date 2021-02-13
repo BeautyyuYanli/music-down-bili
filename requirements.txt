@@ -1,4 +1,6 @@
-moviepy==0.2.3.2
-requests>=2.20.0
+moviepy
+requests
 feedparser
 ffmpeg-python
+eyed3
+bs4

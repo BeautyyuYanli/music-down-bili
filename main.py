@@ -4,7 +4,6 @@ import downloader, cover
 # proxies = { 'http': 'http://127.0.0.1:1081', 'https': 'http://127.0.0.1:1081'}
 proxies = {}
 rssurl = 'https://rsshub.app/bilibili/fav/10725385/53706285'
-# rssurl = 'https://rsshub.app/bilibili/fav/10725385/1173410585'
 # bv2av
 def bv2av(bvid):
     site = "https://api.bilibili.com/x/web-interface/view?bvid=" + bvid

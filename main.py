@@ -39,9 +39,14 @@ if __name__ == '__main__':
                 .run()
             }
             # insert cover
-            cover.add_cover(cover.get_cover(i.link), mp3path)
+            try:
+                cover.add_cover(cover.get_cover(i.link), mp3path)
+            except:
+                with open('./log.txt', 'a') as f:
+                    f.writelines('error when inserting cover to: ' + ftitle + i.link)
         except:
-            print('wrong when downloading: ' + i.link)
+            with open('./log.txt', 'a') as f:
+                f.writelines('error when downloading: ' + i.link)
         else:
             print('successfully downloaded: ' + i.link)
             # update database

@@ -1,9 +1,10 @@
-import requests, json, re
+import requests, json, re, time
 from multiprocessing import Process, Queue
-import time
+import Bv2Av
 q = Queue()
 fid = 1117924884
 num_max = 10
+
 
 class List(Process):
     def __init__(self, url, q):
@@ -33,7 +34,7 @@ class List(Process):
                 vedio = {}
                 for k in elements:
                     vedio[k] = res['data']['medias'][j][k]
-                vedio['link'] = ''
+                vedio['link'] = Bv2Av.bv2av(vedio['bvid'])
                 vedio['pn'] = pn
                 # print(vedio,'\n')
                 self.q.put(vedio)

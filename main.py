@@ -3,15 +3,9 @@ import downloader, cover, getInfo
 # config
 url = 'https://space.bilibili.com/438584984/favlist?fid=1117924884&ftype=create'
 num_max = 10
-# bv2av
-def bv2av(bvid):
-    site = "https://api.bilibili.com/x/web-interface/view?bvid=" + bvid
-    lst = codecs.decode(requests.get(site).content, "utf-8").split("\"")
-    if int(lst[2][1:-1]) != 0:
-        return "视频不存在"
-    return 'https://www.bilibili.com/video/av' + lst[16][1:-1]
 
 if __name__ == '__main__':
+    st = time.time()
     fid = re.findall(r'(?<=fid=)[0-9]*',url)[0]
     list = getInfo.get_list(fid,num_max)
     # prepare database
@@ -20,10 +14,10 @@ if __name__ == '__main__':
     # check update
     update_pool = []
     for i in list:
-        i['link'] = bv2av(i['bvid'])
-        if i['link'] not in donelist:
+        if i['link'] not in donelist :
             print(i['link'])
             update_pool.append(i)
+    print(time.time()-st)
 # update
     print('\ndownloading start\n')
     for i in update_pool:
@@ -45,7 +39,7 @@ if __name__ == '__main__':
                     f.writelines('error when inserting cover to: ' + ftitle + i['link'])
         except:
             with open('./log.txt', 'a') as f:
-                f.writelines('error when downloading: ' + i['link'])
+                f.writelines('error when downloading: ' + i['link'],'\n')
         else:
             print('successfully downloaded: ' + i['link'])
             # update database

@@ -1,15 +1,16 @@
 import requests, ffmpeg, time, re, codecs
 import downloader, cover, getInfo
 # config
-url = 'https://space.bilibili.com/438584984/favlist?fid=1117924884&ftype=create'
+uid = '438584984'
+fid = '1117924884'
+url = 'https://space.bilibili.com/' + uid + '/favlist?fid=' + fid + '&ftype=create'
 num_max = 10
 
 if __name__ == '__main__':
-    st = time.time()
     fid = re.findall(r'(?<=fid=)[0-9]*',url)[0]
     list = getInfo.get_list(fid,num_max)
-    # prepare database
-    with open('database.pwp', 'r') as f:
+    # prepare historylist
+    with open('history.list', 'r') as f:
         donelist = f.read().split('$')
     # check update
     update_pool = []
@@ -17,7 +18,6 @@ if __name__ == '__main__':
         if i['link'] not in donelist :
             print(i['link'])
             update_pool.append(i)
-    print(time.time()-st)
 # update
     print('\ndownloading start\n')
     for i in update_pool:
@@ -44,7 +44,7 @@ if __name__ == '__main__':
             print('successfully downloaded: ' + i['link'])
             # update database
             donelist.append(i['link'])
-            with open('database.pwp', 'w') as f:
+            with open('history.list', 'w') as f:
                 f.write('$'.join(donelist))
                 f.close()
         time.sleep(900)

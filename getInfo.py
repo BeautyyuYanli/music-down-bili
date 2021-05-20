@@ -64,5 +64,7 @@ if __name__ == '__main__':
     list = get_list(fid ,num_max)
     # with open('database.pwp', 'r') as f:
     #     donelist = f.read().split('$')
-    with open('database.qwq','w') as f:
-        f.write(str(list))
+    with open('database.list','w') as f:
+        for i in list:
+            f.write(str(i)+'\n')
+    print(time.time()-start_time)

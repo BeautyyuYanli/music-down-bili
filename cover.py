@@ -1,5 +1,4 @@
 import requests, os, eyed3
-from bs4 import BeautifulSoup as bs
 def get_cover(url):
     with requests.get(url) as getimage:
         return getimage.content

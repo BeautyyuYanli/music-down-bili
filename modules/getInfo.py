@@ -37,9 +37,7 @@ class List(Process):
                     vedio[k] = res['data']['medias'][j][k]
                 vedio['link'] = Bv2Av.bv2av(vedio['bvid'])
                 vedio['pn'] = pn
-                # print(vedio,'\n')
                 self.q.put(vedio)
-                # print(q.get())
         except:
             return
 
@@ -64,8 +62,6 @@ def get_list(fid,num_max):
 if __name__ == '__main__':
     start_time = time.time()
     list = get_list(fid ,num_max)
-    # with open('database.pwp', 'r') as f:
-    #     donelist = f.read().split('$')
     with open('database.list','w') as f:
         for i in list:
             f.write(str(i)+'\n')

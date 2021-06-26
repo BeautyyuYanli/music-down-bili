@@ -1,9 +1,10 @@
 import requests, json, re, time
 from multiprocessing import Process, Queue
 import Bv2Av
+import production.config as config
 q = Queue()
-fid = 1117924884
-num_max = 10
+fid = int(config.fid)
+num_max = config.num_max
 
 
 class List(Process):
@@ -39,7 +40,8 @@ class List(Process):
                 # print(vedio,'\n')
                 self.q.put(vedio)
                 # print(q.get())
-        except:return
+        except:
+            return
 
 def takePn(elem):
     return elem['pn']

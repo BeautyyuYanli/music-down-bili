@@ -7,7 +7,7 @@ if __name__ == '__main__':
     list = getInfo.get_list(fid, config.num_max)
     # prepare historylist
     with open('./production/history.list', 'r') as f:
-        donelist = f.read().split('$')
+        donelist = f.read().split('\n')
     # check update
     update_pool = []
     for i in list:
@@ -43,6 +43,6 @@ if __name__ == '__main__':
             # update database
             donelist.append(i['link'])
             with open('./production/history.list', 'w') as f:
-                f.write('$'.join(donelist))
+                f.write('\n'.join(donelist))
                 f.close()
         time.sleep(config.delayTime)

@@ -1,6 +1,5 @@
-moviepy
-requests
-feedparser
-ffmpeg-python
 eyed3
-bs4
+requests>=2.20.0
+moviepy==0.2.3.2
+ffmpeg-python==0.2.0
+imageio-ffmpeg==0.4.2

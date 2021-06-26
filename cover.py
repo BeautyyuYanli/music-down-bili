@@ -1,10 +1,6 @@
 import requests, os, eyed3
-from bs4 import BeautifulSoup as bs
 def get_cover(url):
-    page = bs(requests.get(url).content, 'html.parser')
-    img = page.find('meta', {'itemprop': 'thumbnailUrl'})
-    img_url = img['content']
-    with requests.get(img_url) as getimage:
+    with requests.get(url) as getimage:
         return getimage.content
 def add_cover(img, mp3path):
     audiofile = eyed3.load(mp3path)

@@ -1,38 +1,31 @@
-import feedparser, requests, ffmpeg, time, re, codecs
-import downloader, cover
+import requests, ffmpeg, time, re, codecs
+import downloader, cover, getInfo
 # config
-# proxies = { 'http': 'http://127.0.0.1:1081', 'https': 'http://127.0.0.1:1081'}
-proxies = {}
-rssurl = 'https://rsshub.app/bilibili/fav/10725385/53706285'
-# bv2av
-def bv2av(bvid):
-    site = "https://api.bilibili.com/x/web-interface/view?bvid=" + bvid
-    lst = codecs.decode(requests.get(site).content, "utf-8").split("\"")
-    if int(lst[2][1:-1]) != 0:
-        return "视频不存在"
-    return 'https://www.bilibili.com/video/av' + lst[16][1:-1]
+uid = '438584984'
+fid = '1117924884'
+url = 'https://space.bilibili.com/' + uid + '/favlist?fid=' + fid + '&ftype=create'
+num_max = 10
 
 if __name__ == '__main__':
-    # prepare rss
-    rss = requests.get(rssurl, proxies=proxies).text
-    feed = feedparser.parse(rss)
-    # prepare database
-    with open('database.pwp', 'r') as f:
+    fid = re.findall(r'(?<=fid=)[0-9]*',url)[0]
+    list = getInfo.get_list(fid,num_max)
+    # prepare historylist
+    with open('history.list', 'r') as f:
         donelist = f.read().split('$')
     # check update
     update_pool = []
-    for i in feed.entries:
-        i.link = bv2av(i.link.split('/')[-1])
-        if i.link not in donelist:
-            print(i.link)
+    for i in list:
+        if i['link'] not in donelist :
+            print(i['link'])
             update_pool.append(i)
-    # update
+# update
+    print('\ndownloading start\n')
     for i in update_pool:
         try:
             # download video
-            ftitle = downloader.main(i.link + '?p=1')
+            ftitle = downloader.main(i['link'] + '?p=1')
             # convert into audio
-            mp3path = 'output/' + re.sub(r'[\/\\:*?"<>|]', '', i.title) + '.mp3'
+            mp3path = 'output/' + re.sub(r'[\/\\:*?"<>|]', '', i['title']) + '.mp3'
             {ffmpeg
                 .input('bilibili_video/' + ftitle + '/' + ftitle + '.flv')
                 .output(mp3path, ab = '1080k')
@@ -40,18 +33,18 @@ if __name__ == '__main__':
             }
             # insert cover
             try:
-                cover.add_cover(cover.get_cover(i.link), mp3path)
+                cover.add_cover(cover.get_cover(i['cover']), mp3path)
             except:
                 with open('./log.txt', 'a') as f:
-                    f.writelines('error when inserting cover to: ' + ftitle + i.link)
+                    f.writelines('error when inserting cover to: ' + ftitle + i['link'])
         except:
             with open('./log.txt', 'a') as f:
-                f.writelines('error when downloading: ' + i.link)
+                f.writelines('error when downloading: ' + i['link'],'\n')
         else:
-            print('successfully downloaded: ' + i.link)
+            print('successfully downloaded: ' + i['link'])
             # update database
-            donelist.append(i.link)
-            with open('database.pwp', 'w') as f:
+            donelist.append(i['link'])
+            with open('history.list', 'w') as f:
                 f.write('$'.join(donelist))
                 f.close()
         time.sleep(900)

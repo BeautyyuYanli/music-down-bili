@@ -1,5 +1,5 @@
 import requests, ffmpeg, time, re, codecs
-import downloader, cover, getInfo
+from modules import downloader, cover, getInfo
 import production.config as config
 
 if __name__ == '__main__':

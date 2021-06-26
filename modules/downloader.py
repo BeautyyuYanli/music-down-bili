@@ -238,10 +238,6 @@ def main(start, quality='80'):
     combine_video(title_list)
     print('done ' + start)
     end_time = time.time()  # 结束时间
-    # 如果是windows系统，下载完成后打开下载目录
-    currentVideoPath = os.path.join(sys.path[0], 'bilibili_video')  # 当前目录作为下载目录
-    if (sys.platform.startswith('win')):
-        os.startfile(currentVideoPath)
     return title_list[0]
 
 

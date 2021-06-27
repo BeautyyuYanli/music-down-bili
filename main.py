@@ -1,4 +1,8 @@
-import requests, ffmpeg, time, re, codecs
+import requests
+import ffmpeg
+import time
+import re
+import codecs
 from modules import downloader, metadata, getInfo
 from production import config
 
@@ -18,7 +22,8 @@ if __name__ == '__main__':
     for i in update_pool:
         try:
             # download video
-            video_title = downloader.main(i['link'] + '?p=1', './bilibili_video')
+            video_title = downloader.main(
+                i['link'] + '?p=1', './bilibili_video')
             video_path = './bilibili_video/' + video_title + '/' + video_title + '.flv'
             # convert into audio
             audio_path = 'output/' + \
@@ -26,7 +31,8 @@ if __name__ == '__main__':
             ffmpeg.input(video_path).output(audio_path, ab='1080k').run()
             # insert cover
             try:
-                metadata.addTag(audio_path, title=i['title'], cover=requests.get(i['cover']).content, album=i['title'])
+                metadata.addTag(audio_path, title=i['title'], cover=requests.get(
+                    i['cover']).content, album=i['title'])
             except:
                 with open('./production/log.txt', 'a') as f:
                     f.writelines(

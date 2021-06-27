@@ -13,6 +13,7 @@ __author__ = 'Henry'
 20190702 - 增加视频多线程下载 速度大幅提升
 '''
 
+from numpy.lib.npyio import save
 import requests, time, hashlib, urllib.request, re, json
 from moviepy.editor import *
 import os, sys, threading
@@ -27,24 +28,7 @@ S = threading.Semaphore(5)
 # 正在下载的视频
 currentPage = []
 
-# 清屏函数
-def Clear():
-    pass
-
-# 显示光标
-def Show():
-    pass
-
-# 隐藏光标
-def Hide():
-    pass
-
-# 移动到位置,且清除这一行
-def POS(x=0,y=0):
-    pass
-
 def signal_handler(signal,frame):
-    Show()
     sys.exit(0)
  
 signal.signal(signal.SIGINT,signal_handler)
@@ -60,13 +44,10 @@ def get_play_list(start_url, cid, quality):
         'Referer': start_url,  # 注意加上referer
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
     }
-    # print(url_api)
     html = requests.get(url_api, headers=headers).json()
-    # print(json.dumps(html))
     video_list = []
     for i in html['durl']:
         video_list.append(i['url'])
-    # print(video_list)
     return video_list
 
 
@@ -85,10 +66,7 @@ def Schedule_cmd(title, page):
     def Schedule(blocknum, blocksize, totalsize):
         # 进度条打印在第几行
         lineNum = currentPage.index(page)+1
-        POS(0, lineNum)
         speed = (blocknum * blocksize) / (time.time() - start_time)
-        # speed_str = " Speed: %.2f" % speed
-        speed_str = " Speed: %s" % format_size(speed)
         recv_size = blocknum * blocksize
 
         # 设置下载进度条
@@ -98,30 +76,11 @@ def Schedule_cmd(title, page):
         s = ('#' * n).ljust(50, '-')
     return Schedule
 
-
-# 字节bytes转化K\M\G
-def format_size(bytes):
-    try:
-        bytes = float(bytes)
-        kb = bytes / 1024
-    except:
-        return "Error"
-    if kb >= 1024:
-        M = kb / 1024
-        if M >= 1024:
-            G = M / 1024
-            return "%.3fG" % (G)
-        else:
-            return "%.3fM" % (M)
-    else:
-        return "%.3fK" % (kb)
-
-
 #  下载视频
-def down_video(video_list, title, start_url, page):
+def down_video(video_list, title, start_url, page, save_path):
     S.acquire()
     num = 1
-    currentVideoPath = os.path.join(sys.path[0], 'bilibili_video', title) # 当前目录作为下载目录
+    currentVideoPath = os.path.join(save_path, title) # 当前目录作为下载目录
     if not os.path.exists(currentVideoPath):
         os.makedirs(currentVideoPath)
     for i in video_list:
@@ -182,7 +141,7 @@ def combine_video(title_list):
             pass
             # 视频只有一段则直接打印下载完成
             # print('[视频合并完成]:' + title)
-def main(start, quality='80'):
+def main(start, save_path, quality='80'):
     start_time = time.time()
     if start.isdigit() == True:  # 如果输入的是av号
         # 获取cid的api, 传入aid即可
@@ -205,41 +164,36 @@ def main(start, quality='80'):
     else:
         # 如果p不存在就是全集下载
         cid_list = data['pages']
-    # print(cid_list)
     # 创建线程池
     threadpool = []
     title_list = []
-    Hide()
     for i, item in enumerate(cid_list):
         cid = str(item['cid'])
-        title = item['part'] + str(random.randint(1,99999999))
+        title = data['title'] + item['part']
         title = re.sub(r'[\/\\:*?"<>|]', '', title)  # 替换为空的
         # s是进度条
-        s = ('#' * round(i/len(cid_list)*50)).ljust(50, '-')
+        # s = ('#' * round(i/len(cid_list)*50)).ljust(50, '-')
         title_list.append(title)
         page = str(item['page'])
         start_url = start_url + "/?p=" + page
         video_list = get_play_list(start_url, cid, quality)
         # down_video(video_list, title, start_url, page)
         # 定义线程
-        th = threading.Thread(target=down_video, args=(video_list, title, start_url, page))
+        th = threading.Thread(target=down_video, args=(video_list, title, start_url, page, save_path))
         # 将线程加入线程池
         threadpool.append(th)
         
-    Clear()
     # 开始线程
     for th in threadpool:
         th.start()
     # 等待所有线程运行完毕
     for th in threadpool:
         th.join()
-    Show()
     # 最后合并视频
     combine_video(title_list)
     print('done ' + start)
-    end_time = time.time()  # 结束时间
+    # end_time = time.time()  # 结束时间
     return title_list[0]
 
-
-# 分P视频下载测试: https://www.bilibili.com/video/av19516333/
-# 下载总耗时14.21秒,约0.23分钟
+if __name__ == '__main__':
+    main('https://www.bilibili.com/video/av503036407', './bilibili_video')

@@ -1,10 +1,9 @@
 import requests, ffmpeg, time, re, codecs
 from modules import downloader, cover, getInfo
-import production.config as config
+from production import config
 
 if __name__ == '__main__':
-    fid = re.findall(r'(?<=fid=)[0-9]*', config.url)[0]
-    list = getInfo.get_list(fid, config.num_max)
+    list = getInfo.get_list(config.fid, config.num_max)
     # prepare historylist
     with open('./production/history.list', 'r') as f:
         donelist = f.read().split('\n')

@@ -1,11 +1,8 @@
 import requests, json, re, time
 from multiprocessing import Process, Queue
 from modules import Bv2Av
-import production.config as config
+from production import config
 q = Queue()
-fid = int(config.fid)
-num_max = config.num_max
-
 
 class List(Process):
     def __init__(self, url, q):
@@ -46,7 +43,7 @@ def takePn(elem):
 
 def get_list(fid,num_max):
     list = []
-    url_list = ['https://api.bilibili.com/x/v3/fav/resource/list?media_id=' + str(fid) + '&pn=' + str(num) + '&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&amp;jsonp=jsonp' for num in range(1,num_max+1)]
+    url_list = ['https://api.bilibili.com/x/v3/fav/resource/list?media_id=' + fid + '&pn=' + str(num) + '&ps=20&keyword=&order=mtime&type=0&tid=0&platform=web&amp;jsonp=jsonp' for num in range(1,num_max+1)]
     Process_list = []
     for url in url_list:
         p = List(url, q)
@@ -61,7 +58,7 @@ def get_list(fid,num_max):
 
 if __name__ == '__main__':
     start_time = time.time()
-    list = get_list(fid ,num_max)
+    list = get_list(config.fid, config.num_max)
     with open('database.list','w') as f:
         for i in list:
             f.write(str(i)+'\n')

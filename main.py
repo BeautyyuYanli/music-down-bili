@@ -1,5 +1,5 @@
 import requests, ffmpeg, time, re, codecs
-from modules import downloader, cover, getInfo
+from modules import downloader, metadata, getInfo
 from production import config
 
 if __name__ == '__main__':
@@ -26,11 +26,11 @@ if __name__ == '__main__':
             ffmpeg.input(video_path).output(audio_path, ab='1080k').run()
             # insert cover
             try:
-                cover.add_cover(cover.get_cover(i['cover']), audio_path)
+                metadata.addTag(audio_path, title=i['title'], cover=requests.get(i['cover']).content, album=i['title'])
             except:
                 with open('./production/log.txt', 'a') as f:
                     f.writelines(
-                        'error when inserting cover to: ' + i['title'] + i['link'])
+                        'error when inserting tag to: ' + i['title'] + i['link'])
         except:
             with open('./production/log.txt', 'a') as f:
                 f.writelines('error when downloading: ' + i['link'], '\n')

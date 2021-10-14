@@ -18,9 +18,6 @@ import requests, time, hashlib, urllib.request, re, json
 from moviepy.editor import *
 import os, sys, threading
 import signal
-import imageio
-import random
-imageio.plugins.ffmpeg.download()
 
 # 线程信号量, 限制并发数
 S = threading.Semaphore(5)
